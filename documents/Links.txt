@@ -1,0 +1,23 @@
+https://electronjs.org/docs/tutorial/first-app
+https://electronjs.org/docs/tutorial/application-architecture#main-and-renderer-processes
+https://electronjs.org/docs/api/browser-window
+
+https://www.npmjs.com/package/electron-workers
+
+https://medium.com/@daspinola/video-stream-with-node-js-and-html5-320b3191a6b6
+https://github.com/daspinola/video-stream-sample
+
+http://www.iconarchive.com/show/rumax-icons-by-toma4025/filetype-zip-icon.html
+http://www.iconarchive.com/show/rumax-icons-by-toma4025/filetype-ip-icon.html
+http://www.iconarchive.com/show/chakram-2-icons-by-apathae/Burn-icon.html
+http://www.iconarchive.com/show/chakram-2-icons-by-apathae/Heart-icon.html
+http://www.iconarchive.com/show/chakram-2-icons-by-apathae/Trash-icon.html
+
+http://www.iconarchive.com/show/blox-folder-icons-by-poundffffff/Private-Folder-icon.html
+http://www.iconarchive.com/show/android-settings-icons-by-graphicloads/lock-icon.html
+
+TODO
+File Drag and Drop:
+https://css-tricks.com/drag-and-drop-file-uploading/
+https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
+https://www.w3schools.com/html/html5_draganddrop.asp

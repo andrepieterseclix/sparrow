@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Security</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+</head>
+
+<body>
+    <div class="container">
+
+        <h1 class="center">
+            <i class="material-icons large">security</i>
+        </h1>
+
+        <form data-bind="submit: submit">
+            <div class="row">
+                <div class="input-field col l4 offset-l4 m6 offset-m3 s12">
+                    <input data-bind="value: password" type="password" id="password" class="validate" autofocus>
+                    <label for="password">Password</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col l4 offset-l4 m6 offset-m3 s12">
+                    <input data-bind="value: confirmPassword" type="password" id="confirmPassword" class="validate">
+                    <label for="confirmPassword">Confirm Password</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col l4 offset-l4 m6 offset-m3 s12">
+                    <button class="waves-effect waves-light btn"><i
+                            class="material-icons left">lock_open</i>Open</button>
+                    <a data-bind="click: cancel" class="waves-effect waves-light btn red darken-1"><i
+                            class="material-icons left">cancel</i>Cancel</a>
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+        const { SecurityViewModel } = require('./scripts/viewModels/securitySetupViewModel');
+        const viewModel = new SecurityViewModel();
+
+        ko.applyBindings(viewModel);
+    </script>
+</body>
+
+</html>

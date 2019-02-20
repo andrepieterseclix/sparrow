@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Create Category</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+    <nav>
+        <div class="nav-wrapper pink">
+            <a class="brand-logo center">Create Category</a>
+        </div>
+    </nav>
+
+    <br />
+
+    <div class="container">
+        <form>
+            <div class="row">
+                <div class="input-field col s12">
+                    <input id="name" type="text" class="validate" autofocus>
+                    <label for="name">Name</label>
+                </div>
+            </div>
+
+            <button class="btn pink lighten-2" type="submit">Save</button>
+            <button class="btn pink lighten-2" id="cancelButton">Cancel</button>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript">
+        const { ipcRenderer } = require('electron');
+        const { Category } = require('./scripts/infrastructure/dataAccess');
+        const form = document.querySelector('form');
+        const cancelButton = document.querySelector('#cancelButton');
+
+        form.addEventListener('submit', event => {
+            event.preventDefault();
+            const category = new Category(document.querySelector('#name').value)
+
+            ipcRenderer.send('categories:create:submit', category);
+        });
+
+        ipcRenderer.on('categories:create:submit', (event, data) => {
+            const { err } = data;
+            if (err) {
+                console.log(err);
+                swal({
+                    title: 'Error',
+                    text: err.errorType === 'uniqueViolated' ? 'Category already exists!' : 'An error has occurred!',
+                    icon: 'warning'
+                });
+
+                return;
+            }
+
+            document.location = 'categories.html';
+        });
+
+        cancelButton.addEventListener('click', () => {
+            event.preventDefault();
+            document.location = 'categories.html';
+        });
+    </script>
+</body>
+</html>

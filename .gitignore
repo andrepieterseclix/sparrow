@@ -1,0 +1,8 @@
+.DS_Store
+.vs/
+.vscode/
+/dist/
+/external_binaries/
+node_modules/
+assets/
+data/

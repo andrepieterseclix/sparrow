@@ -1,0 +1,100 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Categories</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+    <div class="container">
+        <div class="row" data-bind="foreach: categories">
+            <div class="col s12 m6 l4 xl3">
+                <div class="card">
+                    <div class="card-image">
+                        <a data-bind="attr: { href: 'category.html?c=' + _id }">
+                            <img src="assets/images/card_default.png" />
+                            <span class="card-title" data-bind="text: name"></span>
+                        </a>
+                    </div>
+                    <div class="card-action" data-bind="visible: $root.editMode()">
+                        <a data-bind="click: $parent.deleteCategory" class="waves-effect waves-light btn-small red darken-3"><i class="material-icons left">not_interested</i>Delete</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large pink"><i class="large material-icons">mode_edit</i></a>
+        <ul>
+            <li><a id="toggleSettingsButton" class="btn-floating waves-effect waves-light yellow darken-1"><i class="material-icons">settings</i></a></li>
+            <li><a href="category_create.html" class="btn-floating waves-effect waves-light red"><i class="material-icons">add</i></a></li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+        const { ipcRenderer } = require('electron');
+        const navbar = require('./scripts/views/navbar');
+        const breadcrumb = require('./scripts/views/breadcrumb');
+        const { CategoriesViewModel } = require('./scripts/viewModels/categoriesViewModel');
+        const viewModel = new CategoriesViewModel(deleteCallback);
+
+        navbar('categories');
+        breadcrumb([
+            { href: 'index.html', icon: 'home' },
+            { href: 'categories.html', text: 'Categories' }
+        ]);
+
+        ko.applyBindings(viewModel);
+
+        ipcRenderer.on('data:getCategories', (event, data) => {
+            data.forEach((item) => {
+                viewModel.categories.push(item);
+            });
+        });
+
+        document.addEventListener('DOMContentLoaded', () => {
+            const actionButtons = document.querySelectorAll('.fixed-action-btn');
+            const options = { direction: 'top', hoverEnabled: true };
+            M.FloatingActionButton.init(actionButtons, options);
+
+            ipcRenderer.send('data:getCategories');
+        });
+
+        document.querySelector('#toggleSettingsButton').addEventListener('click', event => {
+            event.preventDefault();
+            viewModel.editMode(!viewModel.editMode());
+        });
+
+        ipcRenderer.on('data:deleteCategory', (event, data) => {
+            const { err, unsortedCategory } = data;
+
+            if (err) {
+                console.log({ err });
+                swal("Could not delete Category!");
+                document.location = "categories.html";
+            }
+
+            if (unsortedCategory) {
+                viewModel.categories.push(unsortedCategory);
+                viewModel.categories.sort((left, right) => {
+                    return left.name === right.name
+                        ? 0
+                        : (left.name < right.name ? -1 : 1);
+                });
+            }
+        });
+
+        function deleteCallback(category) {
+            ipcRenderer.send('data:deleteCategory', category);
+            return true;
+        }
+    </script>
+</body>
+</html>

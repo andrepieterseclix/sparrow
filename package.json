@@ -1,0 +1,19 @@
+{
+  "name": "sparrow",
+  "version": "1.0.0",
+  "description": "Tis a secret.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "electron": "^4.0.4"
+  },
+  "dependencies": {
+    "materialize-css": "^1.0.0",
+    "nedb": "^1.8.0",
+    "sweetalert": "^2.1.2"
+  }
+}

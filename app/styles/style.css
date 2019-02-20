@@ -1,0 +1,62 @@
+﻿/*Materializecss Overrides*/
+
+/* label color */
+/*.input-field label {
+    color: #000 !important;
+}*/
+/* label focus color */
+.input-field input[type=text]:focus + label {
+    color: hotpink !important;
+}
+/* label underline focus color */
+.input-field input[type=text]:focus {
+    border-bottom: 1px solid hotpink !important;
+    box-shadow: 0 1px 0 0 hotpink !important;
+}
+/* valid color */
+/*.input-field input[type=text].valid {
+    border-bottom: 1px solid #000 !important;
+    box-shadow: 0 1px 0 0 #000 !important;
+}*/
+/* invalid color */
+/*.input-field input[type=text].invalid {
+    border-bottom: 1px solid #000 !important;
+    box-shadow: 0 1px 0 0 #000 !important;
+}*/
+/* icon prefix focus color */
+/*.input-field .prefix.active {
+    color: #000 !important;
+}*/
+
+/*Custom Breadcrumb:  https://s.codepen.io/j_holtslander/fullpage/LBPveZ*/
+.breadcrumb:last-child {
+    font-weight: 500;
+}
+
+.breadcrumb.dark {
+    color: rgba(0, 0, 0, 0.5);
+    line-height: 64px;
+}
+
+    .breadcrumb.dark:before {
+        color: rgba(0, 0, 0, 0.2);
+        vertical-align: middle;
+    }
+
+    .breadcrumb.dark:last-child {
+        color: rgba(0, 0, 0, 1);
+    }
+
+    .breadcrumb.dark i {
+        line-height: 64px;
+    }
+
+/*Fade Effects:  https://codepen.io/ianaya89/pen/qEqWWB*/
+.showplease {
+    opacity: 1;
+    transition: opacity 500ms;
+}
+
+.noshow {
+    opacity: 0;
+}

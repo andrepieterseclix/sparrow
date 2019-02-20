@@ -1,0 +1,130 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+    <div class="container">
+        <br />
+        <!--Autoplay not allowed unless muted-->
+        <video preload="auto" class="responsive-video noshow" controlsList="nodownload" autoplay muted controls></video>
+    </div>
+
+    <div class="fixed-action-btn">
+        <a class="btn-floating btn-large pink"><i class="large material-icons">mode_edit</i></a>
+        <ul>
+            <li><a href="#" data-bind="click: exportVideo" class="btn-floating waves-effect waves-light indigo"><i class="material-icons">unarchive</i></a></li>
+            <li><a href="#" data-bind="click: deleteVideo" class="btn-floating waves-effect waves-light red"><i class="material-icons">block</i></a></li>
+        </ul>
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        const { ipcRenderer } = require('electron');
+        const { VideoViewModel } = require('./scripts/viewModels/videoViewModel');
+        const viewModel = new VideoViewModel();
+        const navbar = require('./scripts/views/navbar');
+        const breadcrumb = require('./scripts/views/breadcrumb');
+        const player = document.querySelector('video');
+        const source = document.createElement('source');
+        const videoModel = {};
+
+        if (urlParams.has('c'))
+            videoModel.categoryId = urlParams.get('c');
+        if (urlParams.has('v'))
+            videoModel.videoId = urlParams.get('v')
+
+        if (!videoModel.categoryId && !videoModel.videoId) {
+            document.location = 'videos.html';
+        }
+        else if (!videoModel.videoId) {
+            document.location = `categories.html?c=${videoModel.categoryId}`;
+        }
+        else {
+            navbar('videos');
+
+            ko.applyBindings(viewModel);
+
+            ipcRenderer.on('data:getVideo', (sender, data) => {
+                setVideo(data);
+            });
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const actionButtons = document.querySelectorAll('.fixed-action-btn');
+                const options = { direction: 'top', hoverEnabled: true };
+                M.FloatingActionButton.init(actionButtons, options);
+            });
+
+            ipcRenderer.send('data:getVideo', videoModel);
+        }
+
+        function setVideo(data) {
+            const { err, result } = data;
+            const { video, category } = result;
+
+            if (err) {
+                console.error(err);
+                swal({
+                    title: 'Error',
+                    text: 'An error has occurred!',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            viewModel.model(video);
+            setBreadcrumb(video, category);
+
+            const videoUrl = `http://localhost:3000/video/${video._id}`;
+            source.setAttribute('src', videoUrl);
+            source.setAttribute('type', "video/mp4");
+
+            player.appendChild(source);
+
+            player.oncanplay = function () {
+                player.classList.add('showplease');
+                player.classList.remove('noshow');
+            };
+
+            window.addEventListener('beforeunload', disposePlayer);
+        }
+
+        function disposePlayer() {
+            player.pause();
+            player.setAttribute('hidden', null);
+            source.removeAttribute('src');
+            player.load();
+        }
+
+        function setBreadcrumb(video, category) {
+            const breadcrumbItems = [
+                { href: 'index.html', icon: 'home' }
+            ];
+
+            if (category) {
+                viewModel.parentUrl(`category.html?c=${category._id}`);
+                breadcrumbItems.push({ href: 'categories.html', text: 'Categories' });
+                breadcrumbItems.push({ href: viewModel.parentUrl(), text: category.name });
+            }
+            else {
+                viewModel.parentUrl('videos.html');
+                breadcrumbItems.push({ href: viewModel.parentUrl(), text: 'Videos' });
+            }
+
+            breadcrumbItems.push({ href: '#', text: video.title });
+
+            breadcrumb(breadcrumbItems);
+        }
+
+    </script>
+
+</body>
+</html>

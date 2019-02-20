@@ -1,0 +1,77 @@
+﻿<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Category</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+<body>
+
+    <div class="container">
+        <div class="row" data-bind="foreach: videos">
+            <div class="col s12 m6 l4 xl3">
+                <div class="card">
+                    <div class="card-image">
+                        <a href="#" data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
+                            <img src="assets/images/card_default.png" />
+                        </a>
+                    </div>
+                    <div class="card-content">
+                        <p data-bind="text: title"></p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        const { ipcRenderer } = require('electron');
+        const { CategoryViewModel } = require('./scripts/viewModels/categoryViewModel');
+        const categoryId = urlParams.get('c');
+        const viewModel = new CategoryViewModel();
+        const navbar = require('./scripts/views/navbar');
+        const breadcrumb = require('./scripts/views/breadcrumb');
+
+        if (!urlParams.has('c')) {
+            document.location = 'categories.html';
+        }
+        else {
+            navbar('categories');
+            breadcrumb([
+                { href: 'index.html', icon: 'home' },
+                { href: 'categories.html', text: 'Categories' },
+                { href: `category.html?c=${categoryId}`, dataBind: 'text: categoryName'  }
+            ]);
+
+            ko.applyBindings(viewModel);
+
+            ipcRenderer.on('data:getVideos', (sender, data) => {
+                const { err, category } = data;
+
+                if (err) {
+                    console.log(err);
+                    swal({
+                        title: 'Error',
+                        text: 'An error has occurred!',
+                        icon: 'warning'
+                    });
+                    return;
+                }
+
+                viewModel.categoryId(category._id);
+                viewModel.categoryName(category.name);
+                viewModel.videos(category.videos);
+            });
+
+            ipcRenderer.send('data:getVideos', { categoryId });
+        }
+    </script>
+</body>
+</html>
