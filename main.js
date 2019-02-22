@@ -222,6 +222,12 @@ ipcMain.on('videos:import:selectFile', event => {
     });
 });
 
+ipcMain.on('video:edit', (event, item) => {
+    // TODO
+    console.log('wohooo!');
+    ipcMain.send()
+});
+
 ipcMain.on('categories:create:submit', (event, item) => {
     dataAccess.addCategory(item, (err, doc) => {
         event.sender.send('categories:create:submit', { err, doc });

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Edit Video</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+</head>
+
+<body>
+    <nav>
+        <div class="nav-wrapper pink">
+            <a class="brand-logo center">Import Video</a>
+        </div>
+    </nav>
+
+    <br />
+
+    <div class="container">
+        <form>
+
+            <button class="btn pink lighten-2" type="submit">Import</button>
+            <button class="btn pink lighten-2" id="cancelButton">Cancel</button>
+        </form>
+    </div>
+
+    <script type="text/javascript">
+        const { ipcRenderer, remote } = require('electron');
+
+        document.querySelector('#cancelButton').addEventListener('click', (event) => {
+            event.preventDefault();
+            //const ipcMain = new remote.ipcMain();
+            ipcRenderer.send('video:edit', { test: "TEst" });
+
+
+        });
+
+    </script>
+</body>
+
+</html>

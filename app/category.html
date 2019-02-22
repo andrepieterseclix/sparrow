@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow - Category</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
+
 <body>
 
     <div class="container">
@@ -16,7 +18,9 @@
                 <div class="card">
                     <div class="card-image">
                         <a href="#" data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
-                            <img src="assets/images/card_default.png" />
+                            <video class="responsive-video" onmouseover="this.play()" onmouseout="this.pause()" muted>
+                                <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }" type="video/mp4">
+                            </video>
                         </a>
                     </div>
                     <div class="card-content">
@@ -47,7 +51,7 @@
             breadcrumb([
                 { href: 'index.html', icon: 'home' },
                 { href: 'categories.html', text: 'Categories' },
-                { href: `category.html?c=${categoryId}`, dataBind: 'text: categoryName'  }
+                { href: `category.html?c=${categoryId}`, dataBind: 'text: categoryName' }
             ]);
 
             ko.applyBindings(viewModel);
@@ -74,4 +78,5 @@
         }
     </script>
 </body>
+
 </html>

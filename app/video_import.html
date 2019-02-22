@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow - Import</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
     <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
 </head>
+
 <body>
     <nav>
         <div class="nav-wrapper pink">
@@ -20,7 +22,7 @@
     <div class="container">
         <form data-bind="submit: submitVideoImport">
             <div class="row">
-                <div class="input-field col s12">
+                <div class="input-field col s8">
                     <input id="title" type="text" class="validate" data-bind="value: title" required autofocus />
                     <label for="title">Title</label>
                 </div>
@@ -66,4 +68,5 @@
         ko.applyBindings(viewModel);
     </script>
 </body>
+
 </html>

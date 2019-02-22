@@ -5,7 +5,8 @@ module.exports = {
         constructor() {
             const self = this;
             const { FileAccess } = require('./../infrastructure/fileAccess');
-            const { ipcRenderer } = require('electron');
+            const { ipcRenderer, remote } = require('electron');
+            let editWindow;
 
             self.model = ko.observable();
 
@@ -44,6 +45,25 @@ module.exports = {
                             ipcRenderer.send('data:deleteVideo', self.model());
                         }
                     });
+            };
+
+            self.editVideo = function () {
+                //ipcRenderer.send('video:edit', self.model());
+                editWindow = new remote.BrowserWindow({
+                    parent: remote.getCurrentWindow(),
+                    modal: true,
+                    show: false
+                });
+
+                editWindow.once('ready-to-show', () => {
+                    editWindow.show();
+                });
+
+                editWindow.on('closed', () => {
+                    editWindow = null;
+                });
+
+                editWindow.loadFile('./app/video_edit.html');
             };
 
             ipcRenderer.on('videos:export', (event, info) => {
@@ -99,6 +119,11 @@ module.exports = {
                         document.location = self.parentUrl();
                     }
                 });
+            });
+
+            ipcRenderer.on('video:edit', (event, result) => {
+                // TODO
+
             });
         }
     }

@@ -21,3 +21,6 @@ File Drag and Drop:
 https://css-tricks.com/drag-and-drop-file-uploading/
 https://www.smashingmagazine.com/2018/01/drag-drop-file-uploader-vanilla-js/
 https://www.w3schools.com/html/html5_draganddrop.asp
+
+Build and Package
+https://www.christianengvall.se/electron-packager-tutorial/
