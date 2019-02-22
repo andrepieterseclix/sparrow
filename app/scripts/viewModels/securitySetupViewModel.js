@@ -5,7 +5,15 @@ module.exports = {
         constructor() {
             const self = this;
             const { ipcRenderer } = require('electron');
+            const confirmPassword = document.querySelector('#confirmPassword');
+            const password = document.querySelector('#password');
 
+            // Event handlers
+            password.oninput = confirmPassword.oninput = () => {
+                confirmPassword.setCustomValidity("");
+            };
+
+            // Methods
             self.password = ko.observable();
             self.confirmPassword = ko.observable();
 
@@ -23,7 +31,7 @@ module.exports = {
                 }
                 else {
                     if (pw !== conf) {
-                        document.querySelector('#confirmPassword').setCustomValidity("Passwords Don't Match");
+                        confirmPassword.setCustomValidity("Passwords Don't Match");
                     }
                     else {
                         ipcRenderer.send('passwordSet', { pw });

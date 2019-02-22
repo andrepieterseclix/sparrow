@@ -17,18 +17,19 @@ module.exports = {
         constructor(dataDirectory, encryptRecord, decryptRecord) {
             const Datastore = require('nedb');
             const unsortedCategoryName = 'Unsorted';
+            const path = require('path');
 
             // Documents
 
             const categories = new Datastore({
-                filename: `${dataDirectory}\\categories.db`,
+                filename: path.join(dataDirectory, 'cats.db'),
                 autoload: true,
                 afterSerialization: encryptRecord,
                 beforeDeserialization: decryptRecord
             });
 
             const videos = new Datastore({
-                filename: `${dataDirectory}\\videos.db`,
+                filename: path.join(dataDirectory, 'dogs.db'),
                 autoload: true,
                 afterSerialization: encryptRecord,
                 beforeDeserialization: decryptRecord

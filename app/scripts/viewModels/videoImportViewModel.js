@@ -57,14 +57,16 @@ module.exports = {
                     return;
                 }
 
-                fileAccess.importFile(self.filePath(), video._id, deleteSourceFile, err => {
-                    if (err) {
-                        handleError(err, video);
-                        return;
-                    }
+                let importError = null;
 
-                    ipcRenderer.send('videos:import:submit', video);
-                });
+                beginProgress()
+                    .then(() => fileAccess.importFile(self.filePath(), video._id, deleteSourceFile))
+                    .catch(err => importError = handleError(err, video))
+                    .then(endProgress)
+                    .then(() => {
+                        if (!importError)
+                            ipcRenderer.send('videos:import:submit', video);
+                    });
             });
 
             ipcRenderer.send('data:getCategories');
@@ -87,6 +89,23 @@ module.exports = {
                     text: 'An error has occurred!',
                     icon: 'warning'
                 });
+
+                return err;
+            }
+
+            function beginProgress() {
+                // TODO: put in separate module for reusability?
+                // TODO:  indicate progress on UI
+                self.busy(true);
+
+                return Promise.resolve();
+            }
+
+            function endProgress() {
+                // TODO:  indicate progress on UI
+                self.busy(false);
+
+                return Promise.resolve();
             }
         }
     }

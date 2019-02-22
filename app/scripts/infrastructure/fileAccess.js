@@ -6,31 +6,13 @@ module.exports = {
             const fs = require('fs');
             const path = require('path');
             const mkdirp = require('mkdirp');
+            const ensureDirectoryExists = require('./directoryAccess').ensureDirectoryExists;
 
-            this.importFile = function (src, importFileName, deleteSource, callback) {
+            this.importFile = function (src, importFileName, deleteSource) {
                 const dest = path.join(importDir, importFileName);
 
-                fs.stat(importDir, function (err) {
-                    if (!err) {
-                        moveFile(src, dest, deleteSource, callback);
-                        return;
-                    }
-
-                    if (err.code === 'ENOENT') {
-                        console.log('creating: ' + importDir);
-
-                        mkdirp(importDir, mkErr => {
-                            if (mkErr)
-                                callback(mkErr);
-                            else
-                                moveFile(src, dest, deleteSource, callback);
-                        });
-                    }
-                    else {
-                        console.error(err);
-                        callback(err);
-                    }
-                });
+                return ensureDirectoryExists(importDir, fs, mkdirp)
+                    .then(dir => moveFile(src, dest, deleteSource));
             };
 
             this.deleteFile = function (fileName, callback) {
@@ -41,33 +23,60 @@ module.exports = {
                 });
             };
 
-            this.exportFile = function (fileName, dest, callback) {
+            this.exportFile = function (fileName, dest) {
                 const src = path.join(importDir, fileName);
 
-                moveFile(src, dest, false, callback);
+                return moveFile(src, dest, false);
             };
 
-            function moveFile(src, dest, deleteSource, callback) {
-                console.log('Moving file: ', { src, dest, deleteSource });
+            function moveFile(src, dest, deleteSource) {
+                return new Promise((resolve, reject) => {
+                    console.log('Moving file: ', { src, dest, deleteSource });
 
-                // TODO:  Implement a promise?
-                // TODO:  progress indicator?
-                // TODO:  if same drive, use rename instead?
+                    // TODO:  if same drive, use rename instead?
 
-                fs.copyFile(src, dest, err => {
-                    if (err) {
-                        callback(err);
-                    }
-                    else if (deleteSource) {
-                        fs.unlink(src, err => {
-                            callback(err);
-                        });
-                    }
-                    else {
-                        callback();
-                    }
+                    fs.copyFile(src, dest, err => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else if (deleteSource) {
+                            fs.unlink(src, err => {
+                                if(err){
+                                    console.log(err);
+                                }
+                                resolve({ src, dest, deleteSource, err });
+                            });
+                        }
+                        else {
+                            resolve({ src, dest, deleteSource });
+                        }
+                    });
                 });
             }
+
+            // function ensureDirectoryExists(directory) {
+            //     return new Promise((resolve, reject) => {
+            //         fs.stat(directory, (err) => {
+            //             if (!err) {
+            //                 resolve({ directory });
+            //                 return;
+            //             }
+            //             else if (err.code !== 'ENOENT') {
+            //                 reject(err);
+            //                 return;
+            //             }
+
+            //             mkdirp(directory, (err, made) => {
+            //                 if (err) {
+            //                     reject(err);
+            //                 }
+            //                 else {
+            //                     resolve({ directory: made });
+            //                 }
+            //             });
+            //         });
+            //     });
+            // }
         }
     }
 };

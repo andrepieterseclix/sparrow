@@ -7,6 +7,8 @@ module.exports = {
             const self = this;
             const fs = require('fs');
             const path = require('path');
+            const mkdirp = require('mkdirp');
+            const { ensureDirectoryExists } = require('./directoryAccess');
             const securityFilePath = path.join(dataDirectory, 'security.db');
             const phrase = "[this is a secret]";
             const crypto = require('crypto');
@@ -19,7 +21,8 @@ module.exports = {
 
             // Methods
             self.checkSecurity = function () {
-                return openFile()
+                return ensureDirectoryExists(dataDirectory, fs, mkdirp)
+                    .then(openFile)
                     .then(readSecurity)
                     .then(closeFile)
                     .then(createEncryptionHooks);
@@ -60,11 +63,11 @@ module.exports = {
                     result.decryptRecord = doc => doc;
                 }
                 else {
-                    result.encryptRecord = function(doc){
+                    result.encryptRecord = function (doc) {
                         const encryptedData = encryptData(doc, result.key);
                         return encryptedData.ciphertext;
                     };
-                    result.decryptRecord = function(doc){
+                    result.decryptRecord = function (doc) {
                         const decryptedData = decryptData(doc, result.key);
                         return decryptedData.plaintext;
                     }

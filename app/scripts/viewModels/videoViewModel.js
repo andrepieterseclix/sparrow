@@ -70,25 +70,27 @@ module.exports = {
                 const { fileName, exportPath, importDir } = info;
                 const fileAccess = new FileAccess(importDir);
 
-                if (exportPath) {
-                    fileAccess.exportFile(fileName, exportPath, err => {
-                        if (err) {
-                            console.log(err);
-                            swal({
-                                title: 'Error',
-                                text: 'An error has occurred!',
-                                icon: 'warning'
-                            });
-                        }
-                        else {
-                            swal({
-                                title: 'Success',
-                                text: 'The file has been exported!',
-                                icon: 'info'
-                            });
-                        }
-                    });
+                if (!exportPath) {
+                    return;
                 }
+
+                // TODO:  progress indicator?
+                fileAccess.exportFile(fileName, exportPath)
+                    .then(() => {
+                        swal({
+                            title: 'Success',
+                            text: 'The file has been exported!',
+                            icon: 'info'
+                        });
+                    })
+                    .catch(err => {
+                        console.log(err);
+                        swal({
+                            title: 'Error',
+                            text: 'An error has occurred!',
+                            icon: 'warning'
+                        });
+                    });
             });
 
             ipcRenderer.on('data:deleteVideo', (event, response) => {

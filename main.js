@@ -1,8 +1,9 @@
 const { dialog, app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const importDir = getWorkingDirectory('blob');
+const dataDirectory = getWorkingDirectory('base');
 
 // Data Access
-const dataDirectory = `${__dirname}\\data`;
 const { DataAccess } = require('./app/scripts/infrastructure/dataAccess');
 let dataAccess = null;
 
@@ -12,10 +13,19 @@ const securityHandler = new SecurityHandler(dataDirectory);
 let loggedIn = false;
 
 // Web Server
-const importDir = `${__dirname}\\assets\\videos`;
 const { VideoStreamingServer } = require('./app/scripts/infrastructure/videoStreamingServer');
 const streamingServer = new VideoStreamingServer(importDir);
 streamingServer.start();
+
+function getWorkingDirectory(subdir) {
+    let wd = app.getAppPath();
+    if (wd.endsWith('.asar')) {
+        wd = path.dirname(wd);
+    }
+    wd = path.join(wd, 'data', subdir);
+
+    return wd;
+}
 
 // User Interface
 // Keep a global reference of the window object, if you don't, the window will
