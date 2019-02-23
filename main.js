@@ -23,7 +23,6 @@ function getWorkingDirectory(subdir) {
         wd = path.dirname(wd);
     }
     wd = path.join(wd, 'data', subdir);
-
     return wd;
 }
 
@@ -182,15 +181,15 @@ ipcMain.on('videos:import', () => {
     createImportWindow();
 });
 
-ipcMain.on('videos:export', (event, video) => {
+ipcMain.on('videos:export', (event, item) => {
     dialog.showSaveDialog({
         title: 'Export Video',
-        defaultPath: path.join(app.getPath('downloads'), video.originalFileName),
+        defaultPath: path.join(app.getPath('downloads'), item.video.originalFileName),
         filters: [
             { name: 'MP4 Video (*.mp4)', extensions: ['mp4'] }
         ]
     }, exportPath => {
-        event.sender.send('videos:export', { fileName: video._id, exportPath, importDir });
+        event.sender.send('videos:export', { fileName: item.video._id, exportPath, importDir, item });
     });
 });
 
@@ -273,3 +272,7 @@ ipcMain.on('data:getVideo', (event, item) => {
         event.sender.send('data:getVideo', { err, result });
     });
 });
+
+ipcMain.on('console.log', (event, info) => {
+    console.log(info);
+})

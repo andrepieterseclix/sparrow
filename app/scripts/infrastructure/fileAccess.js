@@ -29,11 +29,29 @@ module.exports = {
                 return moveFile(src, dest, false);
             };
 
+            this.writeMetaFile = function (exportFileName, video, silent) {
+                return new Promise((resolve, reject) => {
+                    const metaFileName = `${exportFileName}.json`;
+                    const content = JSON.stringify(video);
+
+                    fs.writeFile(metaFileName, content, err => {
+                        if (err) {
+                            if (!silent) {
+                                reject(err);
+                                return;
+                            }
+                            console.error(err);
+                        }
+                        resolve({ metaFileName });
+                    });
+                });
+            };
+
             function moveFile(src, dest, deleteSource) {
                 return new Promise((resolve, reject) => {
                     console.log('Moving file: ', { src, dest, deleteSource });
 
-                    // TODO:  if same drive, use rename instead?
+                    // TODO:  if same drive and deleteSource, use rename instead?
 
                     fs.copyFile(src, dest, err => {
                         if (err) {
@@ -41,7 +59,7 @@ module.exports = {
                         }
                         else if (deleteSource) {
                             fs.unlink(src, err => {
-                                if(err){
+                                if (err) {
                                     console.log(err);
                                 }
                                 resolve({ src, dest, deleteSource, err });
@@ -53,30 +71,6 @@ module.exports = {
                     });
                 });
             }
-
-            // function ensureDirectoryExists(directory) {
-            //     return new Promise((resolve, reject) => {
-            //         fs.stat(directory, (err) => {
-            //             if (!err) {
-            //                 resolve({ directory });
-            //                 return;
-            //             }
-            //             else if (err.code !== 'ENOENT') {
-            //                 reject(err);
-            //                 return;
-            //             }
-
-            //             mkdirp(directory, (err, made) => {
-            //                 if (err) {
-            //                     reject(err);
-            //                 }
-            //                 else {
-            //                     resolve({ directory: made });
-            //                 }
-            //             });
-            //         });
-            //     });
-            // }
         }
     }
 };

@@ -18,7 +18,7 @@
                 <div class="card">
                     <div class="card-image">
                         <a href="#" data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
-                            <video class="responsive-video" onmouseover="this.play()" onmouseout="this.pause()" muted>
+                            <video preload="metadata" class="responsive-video" onmouseover="this.play()" onmouseout="this.pause()" muted>
                                 <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }" type="video/mp4">
                             </video>
                         </a>
@@ -76,6 +76,18 @@
 
             ipcRenderer.send('data:getVideos', { categoryId });
         }
+
+        window.addEventListener('beforeunload', () => {
+            const sources = document.getElementsByTagName('source');
+
+            for (let i = 0; i < sources.length; i++) {
+                const source = sources[i];
+                source.parentElement.pause();
+                source.closest('.col').setAttribute('hidden', null);
+                source.removeAttribute('src');
+                source.parentElement.load();
+            }
+        });
     </script>
 </body>
 

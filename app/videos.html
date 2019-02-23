@@ -17,8 +17,10 @@
                 <div class="card">
                     <div class="card-image">
                         <a href="#" data-bind="attr: { href: 'video.html?v=' + _id }">
-                            <video class="responsive-video" onmouseover="this.play()" onmouseout="this.pause()" muted>
-                                <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }" type="video/mp4">
+                            <video preload="metadata" class="responsive-video" onmouseover="this.play()"
+                                onmouseout="this.pause()" muted>
+                                <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }"
+                                    type="video/mp4">
                             </video>
                         </a>
                     </div>
@@ -38,6 +40,7 @@
     <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
     <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
     <script type="text/javascript">
+        const { ipcRenderer } = require('electron');
         const { VideosViewModel } = require('./scripts/viewModels/videosViewModel');
         const viewModel = new VideosViewModel();
         const navbar = require('./scripts/views/navbar');
@@ -50,6 +53,18 @@
         ]);
 
         ko.applyBindings(viewModel);
+
+        window.addEventListener('beforeunload', () => {
+            const sources = document.getElementsByTagName('source');
+
+            for (let i = 0; i < sources.length; i++) {
+                const source = sources[i];
+                source.parentElement.pause();
+                source.closest('.col').setAttribute('hidden', null);
+                source.removeAttribute('src');
+                source.parentElement.load();
+            }
+        });
     </script>
 </body>
 
