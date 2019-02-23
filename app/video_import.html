@@ -22,15 +22,15 @@
     <div class="container">
         <form data-bind="submit: submitVideoImport">
             <div class="row">
-                <div class="input-field col s8">
-                    <input id="title" type="text" class="validate" data-bind="value: title" required autofocus />
-                    <label for="title">Title</label>
-                </div>
-            </div>
-            <div class="row">
                 <div class="input-field col s12">
                     <input id="file" type="text" class="validate" data-bind="value: filePath" required disabled />
                     <a href="#" id="chooseFileLink" data-bind="click: chooseFile">Choose file</a>
+                </div>
+            </div>
+            <div class="row">
+                <div class="input-field col s10">
+                    <input id="title" type="text" class="validate" data-bind="textInput: title" required autofocus />
+                    <label id="title-label" for="title">Title</label>
                 </div>
             </div>
 
@@ -58,6 +58,7 @@
     </div>
     <br />
 
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
     <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
     <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
     <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>

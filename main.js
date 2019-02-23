@@ -98,7 +98,7 @@ function runApp() {
 
 function createImportWindow() {
     importWindow = new BrowserWindow({
-        width: 600,
+        width: 800,
         height: 600,
         parent: window,
         frame: false,

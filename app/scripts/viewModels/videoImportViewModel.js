@@ -46,6 +46,13 @@ module.exports = {
             ipcRenderer.on('videos:import:selectFile', (event, data) => {
                 if (data)
                     self.filePath(data[0]);
+
+                if (!self.title()) {
+                    self.title(path.basename(data[0]));
+                    // set active?
+                    //document.querySelector('#title-label').classList.add('active'); // doesn't revalidate!
+                    //Materialize.updateTextFields();
+                }
             });
 
             ipcRenderer.on('data:createVideo', (event, data) => {

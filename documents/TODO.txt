@@ -1,3 +1,2 @@
 Improve import screen
     Read .json
-Improve loading/unloading of previews
