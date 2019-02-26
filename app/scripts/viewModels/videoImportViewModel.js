@@ -75,6 +75,11 @@ module.exports = {
                     });
             });
 
+            ipcRenderer.on('videos:import:setCategory', (event, data) => {
+                self.categories()
+                    .forEach(category => category.selected(category._id === data.categoryId));
+            });
+
             ipcRenderer.send('data:getCategories');
 
             ipcRenderer.on('data:getCategories', (event, data) => {

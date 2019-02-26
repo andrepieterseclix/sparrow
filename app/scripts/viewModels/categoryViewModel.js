@@ -2,7 +2,7 @@
 
 module.exports = {
     CategoryViewModel: class {
-        constructor() {
+        constructor(importVideo) {
             const self = this;
 
             self.categoryId = ko.observable();
@@ -10,6 +10,8 @@ module.exports = {
             self.categoryName = ko.observable();
 
             self.videos = ko.observableArray();
+
+            self.importVideo = importVideo;
         }
     }
 };

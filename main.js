@@ -96,7 +96,9 @@ function runApp() {
         .catch(err => console.log(err));
 }
 
-function createImportWindow() {
+function createImportWindow(parameters) {
+    parameters = parameters || {};
+
     importWindow = new BrowserWindow({
         width: 800,
         height: 600,
@@ -108,10 +110,13 @@ function createImportWindow() {
 
     importWindow.once('ready-to-show', () => {
         importWindow.show();
-        //importWindow.webContents.openDevTools();
+
+        if (parameters.categoryId) {
+            importWindow.webContents.send('videos:import:setCategory', parameters);
+        }
     });
 
-    importWindow.loadFile("app/video_import.html");
+    importWindow.loadFile('app/video_import.html');
 
     importWindow.on('closed', () => {
         importWindow = null;
@@ -177,8 +182,8 @@ ipcMain.on('quit', () => {
     app.quit();
 });
 
-ipcMain.on('videos:import', () => {
-    createImportWindow();
+ipcMain.on('videos:import', (event, parameters) => {
+    createImportWindow(parameters);
 });
 
 ipcMain.on('videos:export', (event, item) => {

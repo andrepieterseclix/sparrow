@@ -18,8 +18,10 @@
                 <div class="card">
                     <div class="card-image">
                         <a href="#" data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
-                            <video preload="metadata" class="responsive-video" onmouseover="this.play()" onmouseout="this.pause()" muted>
-                                <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }" type="video/mp4">
+                            <video preload="metadata" class="responsive-video" onmouseover="this.play()"
+                                onmouseout="this.pause()" muted>
+                                <source data-bind="attr: { src: `http://localhost:3000/video/${_id}#t=15` }"
+                                    type="video/mp4">
                             </video>
                         </a>
                     </div>
@@ -31,6 +33,11 @@
         </div>
     </div>
 
+    <div class="fixed-action-btn">
+        <a id="importButton" class="btn-floating btn-large waves-effect waves-light pink"><i class="material-icons"
+                data-bind="click: importVideo">add</i></a>
+    </div>
+
     <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
     <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
     <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
@@ -39,7 +46,7 @@
         const { ipcRenderer } = require('electron');
         const { CategoryViewModel } = require('./scripts/viewModels/categoryViewModel');
         const categoryId = urlParams.get('c');
-        const viewModel = new CategoryViewModel();
+        const viewModel = new CategoryViewModel(() => ipcRenderer.send('videos:import', { categoryId }));
         const navbar = require('./scripts/views/navbar');
         const breadcrumb = require('./scripts/views/breadcrumb');
 
@@ -87,6 +94,15 @@
                 source.removeAttribute('src');
                 source.parentElement.load();
             }
+        });
+
+        ipcRenderer.on('videos:import:submit', (sender, item) => {
+            viewModel.videos.push(item);
+            viewModel.videos.sort((left, right) => {
+                return left.title === right.title
+                    ? 0
+                    : left.title < right.title ? -1 : 1;
+            });
         });
     </script>
 </body>
