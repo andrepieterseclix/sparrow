@@ -34,6 +34,14 @@ module.exports = {
                     return;
                 }
 
+                category.videos.forEach(video => {
+                    let skipSeconds = '';
+                    if (video.skipSeconds) {
+                        skipSeconds = `#t=${video.skipSeconds}`;
+                    }
+                    video.url = `http://localhost:3000/video/${video._id}${skipSeconds}`
+                });
+
                 self.videos(category.videos);
             });
 

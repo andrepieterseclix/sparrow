@@ -129,7 +129,11 @@
             viewModel.skipSeconds(video.skipSeconds || 0);
             setBreadcrumb(video, category);
 
-            const videoUrl = `http://localhost:3000/video/${video._id}`;
+            let videoUrl = `http://localhost:3000/video/${video._id}`;
+            if(video.skipSeconds) {
+                videoUrl += `#t=${video.skipSeconds}`;
+            }
+
             source.setAttribute('src', videoUrl);
             source.setAttribute('type', "video/mp4");
 
