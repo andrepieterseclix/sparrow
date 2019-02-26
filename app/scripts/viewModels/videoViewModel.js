@@ -5,12 +5,21 @@ module.exports = {
         constructor() {
             const self = this;
             const { FileAccess } = require('./../infrastructure/fileAccess');
-            const { ipcRenderer, remote } = require('electron');
-            let editWindow;
+            const { ipcRenderer } = require('electron');
 
+            self.editMode = ko.observable(false);
             self.model = ko.observable();
-
             self.parentUrl = ko.observable();
+            self.editTitle = ko.observable();
+            self.categories = ko.observableArray();
+            self.skipSeconds = ko.observable();
+
+            self.setCategories = function (data) {
+                data.forEach(category => {
+                    category.selected = ko.observable(self.model().categories.includes(category._id));
+                    self.categories.push(category);
+                });
+            };
 
             self.exportVideo = function () {
                 swal({
@@ -80,24 +89,45 @@ module.exports = {
                     });
             };
 
-            self.editVideo = function () {
-                //ipcRenderer.send('video:edit', self.model());
-                editWindow = new remote.BrowserWindow({
-                    parent: remote.getCurrentWindow(),
-                    modal: true,
-                    show: false
-                });
-
-                editWindow.once('ready-to-show', () => {
-                    editWindow.show();
-                });
-
-                editWindow.on('closed', () => {
-                    editWindow = null;
-                });
-
-                editWindow.loadFile('./app/video_edit.html');
+            self.toggleEditMode = function () {
+                self.editMode(!self.editMode());
             };
+
+            self.setStartMarker = function () {
+                const video = document.querySelector('video');
+                self.skipSeconds(video.currentTime);
+            };
+
+            self.save = function () {
+                const modified = self.model();
+
+                modified.title = self.editTitle();
+                modified.categories = self
+                    .categories()
+                    .filter(x => x.selected())
+                    .map(x => x._id);
+                modified.skipSeconds = self.skipSeconds();
+                if (modified.skipSeconds === 0) {
+                    delete modified.skipSeconds;
+                }
+
+                ipcRenderer.send('data:updateVideo', modified);
+            };
+
+            ipcRenderer.on('data:updateVideo', (event, info) => {
+                const { err, video } = info;
+                if (err) {
+                    console.log(err);
+                    swal({
+                        title: 'Error',
+                        text: 'An error has occurred!',
+                        icon: 'warning'
+                    });
+                }
+                else {
+                    location.reload();
+                }
+            })
 
             ipcRenderer.on('videos:export', (event, info) => {
                 const { fileName, exportPath, importDir, item } = info;
@@ -115,7 +145,6 @@ module.exports = {
                             title: 'Success',
                             text: 'The file has been exported!',
                             icon: 'info'
-                            //buttons: false
                         });
                     })
                     .catch(err => {
@@ -167,11 +196,6 @@ module.exports = {
                         document.location = self.parentUrl();
                     }
                 });
-            });
-
-            ipcRenderer.on('video:edit', (event, result) => {
-                // TODO
-
             });
         }
     }

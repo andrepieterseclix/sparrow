@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow</title>
@@ -8,19 +9,56 @@
     <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
+
 <body>
     <div class="container">
         <br />
         <!--Autoplay not allowed unless muted-->
         <video preload="auto" class="responsive-video noshow" controlsList="nodownload" autoplay muted controls></video>
+
+        <div id="edit-section" data-bind="visible: editMode" hidden>
+            <form data-bind="submit: save">
+                <div class="row">
+                    <div class="col s10">
+                        <p data-bind="text: `Start at ${Math.trunc(skipSeconds())} seconds`"></p>
+                        <button data-bind="click: setStartMarker" class="btn pink lighten-2">Set start marker</button>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="input-field col s10">
+                        <input id="title" type="text" class="validate" data-bind="textInput: editTitle" required
+                            autofocus />
+                        <label id="title-label" for="title">Title</label>
+                    </div>
+                </div>
+
+                <div class="row" data-bind="foreach: categories">
+                    <div class="col s10">
+                        <p>
+                            <label>
+                                <input type="checkbox" data-bind="checked: selected" />
+                                <span data-bind="text: name"></span>
+                            </label>
+                        </p>
+                    </div>
+                </div>
+
+                <button class="btn pink lighten-2" type="submit">Save</button>
+            </form>
+            <br />
+        </div>
     </div>
 
     <div class="fixed-action-btn">
         <a class="btn-floating btn-large pink"><i class="large material-icons">menu</i></a>
         <ul>
-            <li><a href="#" data-bind="click: deleteVideo" class="btn-floating waves-effect waves-light red"><i class="material-icons">block</i></a></li>
-            <li><a href="#" data-bind="click: exportVideo" class="btn-floating waves-effect waves-light green"><i class="material-icons">unarchive</i></a></li>
-            <li><a href="#" data-bind="click: editVideo" class="btn-floating waves-effect waves-light blue"><i class="material-icons">mode_edit</i></a></li>
+            <li><a href="#" data-bind="click: deleteVideo" class="btn-floating waves-effect waves-light red"><i
+                        class="material-icons">block</i></a></li>
+            <li><a href="#" data-bind="click: exportVideo" class="btn-floating waves-effect waves-light green"><i
+                        class="material-icons">unarchive</i></a></li>
+            <li><a href="#" data-bind="click: toggleEditMode" class="btn-floating waves-effect waves-light blue"><i
+                        class="material-icons">mode_edit</i></a></li>
         </ul>
     </div>
 
@@ -41,7 +79,7 @@
         if (urlParams.has('c'))
             videoModel.categoryId = urlParams.get('c');
         if (urlParams.has('v'))
-            videoModel.videoId = urlParams.get('v')
+            videoModel.videoId = urlParams.get('v');
 
         if (!videoModel.categoryId && !videoModel.videoId) {
             document.location = 'videos.html';
@@ -53,9 +91,14 @@
             navbar('videos');
 
             ko.applyBindings(viewModel);
+            document.querySelector('#edit-section').removeAttribute('hidden');
 
             ipcRenderer.on('data:getVideo', (sender, data) => {
                 setVideo(data);
+            });
+
+            ipcRenderer.on('data:getCategories', (sender, data) => {
+                viewModel.setCategories(data);
             });
 
             document.addEventListener('DOMContentLoaded', () => {
@@ -82,6 +125,8 @@
             }
 
             viewModel.model(video);
+            viewModel.editTitle(video.title);
+            viewModel.skipSeconds(video.skipSeconds || 0);
             setBreadcrumb(video, category);
 
             const videoUrl = `http://localhost:3000/video/${video._id}`;
@@ -96,6 +141,8 @@
             };
 
             window.addEventListener('beforeunload', disposePlayer);
+
+            ipcRenderer.send('data:getCategories');
         }
 
         function disposePlayer() {
@@ -124,8 +171,8 @@
 
             breadcrumb(breadcrumbItems);
         }
-
     </script>
 
 </body>
+
 </html>

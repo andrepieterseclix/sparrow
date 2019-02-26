@@ -136,6 +136,17 @@ module.exports = {
                 });
             };
 
+            this.updateVideo = function (video, callback) {
+                videos.update(
+                    { _id: video._id },
+                    video,
+                    { multi: true, returnUpdatedDocs: true },
+                    (err, numAffected, affectedDocuments) => {
+                        callback(err, affectedDocuments);
+                    }
+                );
+            };
+
             // Helper Methods
 
             function unlinkCategoryFromVideos(category) {
@@ -234,10 +245,15 @@ module.exports = {
         }
     },
     Video: class {
-        constructor(title, originalFileName, categories) {
+        constructor(title, originalFileName, categories, skipSeconds) {
             this.title = title;
             this.originalFileName = originalFileName;
             this.categories = categories || [];
+
+            // Optional
+            if (skipSeconds) {
+                this.skipSeconds = skipSeconds;
+            }
         }
     }
 };

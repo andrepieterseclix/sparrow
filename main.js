@@ -231,12 +231,6 @@ ipcMain.on('videos:import:selectFile', event => {
     });
 });
 
-ipcMain.on('video:edit', (event, item) => {
-    // TODO
-    console.log('wohooo!');
-    ipcMain.send()
-});
-
 ipcMain.on('categories:create:submit', (event, item) => {
     dataAccess.addCategory(item, (err, doc) => {
         event.sender.send('categories:create:submit', { err, doc });
@@ -256,8 +250,14 @@ ipcMain.on('data:deleteCategory', (event, item) => {
 });
 
 ipcMain.on('data:deleteVideo', (event, video) => {
-    dataAccess.deleteVideo(video, (err) => {
+    dataAccess.deleteVideo(video, err => {
         event.sender.send('data:deleteVideo', { err, importDir });
+    });
+});
+
+ipcMain.on('data:updateVideo', (event, video) => {
+    dataAccess.updateVideo(video, (err, result) => {
+        event.sender.send('data:updateVideo', { err, video: result });
     });
 });
 
