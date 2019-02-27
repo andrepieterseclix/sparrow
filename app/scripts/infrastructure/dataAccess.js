@@ -10,7 +10,6 @@ https://developers.google.com/web/fundamentals/primers/promises
 https://javascript.info/promise-basics
 https://scotch.io/tutorials/javascript-promises-for-dummies#toc-chaining-promises
 */
-// TODO:  Encrypt data files
 
 module.exports = {
     DataAccess: class {
@@ -55,31 +54,18 @@ module.exports = {
                 });
             };
 
-            this.getVideos = function (categoryId, callback) {
-                if (!categoryId) {
-                    videos.find({}).sort({ title: 1 }).exec((err, videos) => {
-                        callback(err, { videos });
-                    });
-                    return;
+            this.getVideos = function (spec) {
+                let promise = Promise.resolve(spec);
+
+                if (spec.categoryId) {
+                    promise = promise.then(getVideosForCategory);
+                }
+                else {
+                    promise = promise.then(getVideos);
                 }
 
-                categories.findOne({ _id: categoryId }, (err, category) => {
-                    if (err) {
-                        callback(err);
-                        return;
-                    }
-
-                    videos.find({ categories: { $elemMatch: category._id } }).sort({ title: 1 }).exec((err, videos) => {
-                        if (err) {
-                            callback(err);
-                            return;
-                        }
-
-                        category.videos = videos;
-                        callback(null, category);
-                    });
-                });
-            };
+                return promise;
+            }
 
             this.deleteCategory = function (category, callback) {
                 const promise = unlinkCategoryFromVideos(category)
@@ -148,6 +134,78 @@ module.exports = {
             };
 
             // Helper Methods
+
+            function getVideos(spec) {
+                return new Promise((resolve, reject) => {
+                    let query = videos.find({}).sort({ title: 1 });
+                    if (spec.pageNumber && spec.pageSize) {
+                        query = query.skip((spec.pageNumber - 1) * spec.pageSize).limit(spec.pageSize);
+                    }
+
+                    query.exec((err, videos) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve({ ...spec, videos });
+                        }
+                    });
+                })
+                    .then(result => {
+                        return new Promise((resolve, reject) => {
+                            videos.count({}, (err, count) => {
+                                if (err) {
+                                    reject(err);
+                                }
+                                else {
+                                    resolve({ ...result, totalRecords: count });
+                                }
+                            });
+                        });
+                    });
+            }
+
+            function getVideosForCategory(spec) {
+                return new Promise((resolve, reject) => {
+                    categories.findOne({ _id: spec.categoryId }, (err, category) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve({ ...spec, ...category });
+                        }
+                    });
+                })
+                    .then(result => {
+                        return new Promise((resolve, reject) => {
+                            let query = videos.find({ categories: { $elemMatch: result._id } }).sort({ title: 1 });
+                            if (result.pageNumber && result.pageSize) {
+                                query = query.skip((result.pageNumber - 1) * result.pageSize).limit(result.pageSize);
+                            }
+
+                            query.exec((err, videos) => {
+                                if (err) {
+                                    reject(err);
+                                }
+                                else {
+                                    resolve({ ...result, videos });
+                                }
+                            });
+                        })
+                    })
+                    .then(result => {
+                        return new Promise((resolve, reject) => {
+                            videos.count({ categories: { $elemMatch: result._id } }, (err, count) => {
+                                if (err) {
+                                    reject(err);
+                                }
+                                else {
+                                    resolve({ ...result, totalRecords: count });
+                                }
+                            });
+                        });
+                    });
+            }
 
             function unlinkCategoryFromVideos(category) {
                 return new Promise((resolve, reject) => {

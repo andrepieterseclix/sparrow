@@ -11,27 +11,32 @@
 </head>
 
 <body>
-
-    <div class="container">
-        <div class="row" data-bind="foreach: videos">
-            <div class="col s12 m6 l4 xl3">
-                <div class="card">
-                    <div class="card-image">
-                        <a href="#" data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
-                            <video preload="metadata" class="responsive-video" onmouseover="this.play()"
-                                onmouseout="this.pause()" muted>
-                                <source data-bind="attr: { src: url }"
-                                    type="video/mp4">
-                            </video>
-                        </a>
-                    </div>
-                    <div class="card-content">
-                        <p data-bind="text: title"></p>
+    <main>
+        <div class="container">
+            <div class="row" data-bind="foreach: videos">
+                <div class="col s12 m6 l4 xl3">
+                    <div class="card">
+                        <div class="card-image">
+                            <a href="#"
+                                data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
+                                <video preload="metadata" class="responsive-video" onmouseover="this.play()"
+                                    onmouseout="this.pause()" muted>
+                                    <source data-bind="attr: { src: url }" type="video/mp4">
+                                </video>
+                            </a>
+                        </div>
+                        <div class="card-content">
+                            <p data-bind="text: title"></p>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </main>
+
+    <footer>
+        <div id="pagination"></div>
+    </footer>
 
     <div class="fixed-action-btn">
         <a id="importButton" class="btn-floating btn-large waves-effect waves-light pink"><i class="material-icons"
@@ -49,7 +54,15 @@
         const viewModel = new CategoryViewModel(() => ipcRenderer.send('videos:import', { categoryId }));
         const navbar = require('./scripts/views/navbar');
         const breadcrumb = require('./scripts/views/breadcrumb');
+        const pagination = require('./scripts/views/pagination');
+        const page = { pageNumber: 1, pageSize: 12 };
 
+        if (urlParams.has('p')) {
+            page.pageNumber = parseInt(urlParams.get('p'));
+        }
+        if (urlParams.has('s')) {
+            page.pageSize = parseInt(urlParams.get('s'));
+        }
         if (!urlParams.has('c')) {
             document.location = 'categories.html';
         }
@@ -87,9 +100,11 @@
                     video.url = `http://localhost:3000/video/${video._id}${skipSeconds}`
                 });
                 viewModel.videos(category.videos);
+
+                pagination(category, 'category.html', urlParams);
             });
 
-            ipcRenderer.send('data:getVideos', { categoryId });
+            ipcRenderer.send('data:getVideos', { ...page, categoryId });
         }
 
         window.addEventListener('beforeunload', () => {
@@ -105,6 +120,9 @@
         });
 
         ipcRenderer.on('videos:import:submit', (sender, item) => {
+            item.url = `http://localhost:3000/video/${item._id}`
+
+            // TODO:  this might screw with pagination, handle differently?
             viewModel.videos.push(item);
             viewModel.videos.sort((left, right) => {
                 return left.title === right.title

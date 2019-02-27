@@ -266,10 +266,10 @@ ipcMain.on('data:updateVideo', (event, video) => {
     });
 });
 
-ipcMain.on('data:getVideos', (event, item) => {
-    dataAccess.getVideos(item.categoryId, (err, category) => {
-        event.sender.send('data:getVideos', { err, category });
-    });
+ipcMain.on('data:getVideos', (event, spec) => {
+    dataAccess.getVideos(spec)
+        .then(result => event.sender.send('data:getVideos', { err: null, category: result }))
+        .catch(err => event.sender.send('data:getVideos', { err }));
 });
 
 ipcMain.on('data:getVideo', (event, item) => {
