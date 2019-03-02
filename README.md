@@ -1,29 +1,51 @@
 # README #
-
-This README would normally document whatever steps are necessary to get your application up and running.
+                                                                                                                                                               
+                                                                        ...
+                                                                    ((#/*,,,,,,,
+                                                                ./(((#%#*,****((
+                                                                ((##/%##%&&&//&@*,
+                                                                (#(****,,.(@@@#/**,/.
+                                                                (##%*,....    ###(#%%/.
+                                                            ,,,(##(         .@@@
+                                                            *(**(/*.       .*&@@@
+                                                        ,(*(&(/%##(#@%#%(//(&@@,
+                                                        (//@(/(&(((@%##@###,**@@&
+                                                        *(/%#(#@#((&##%%#%(,,,(%&
+                                                    .(/%((#&(%%@(@%#&@@@#.,,,,/*
+                                                    (*##/%%##@((#((.  .   ,,,.,....
+                                                    /(&,@@(#%##%(%(%(###/.,.....,
+                                                (#(((@%,(@%/%(#&(&(%#%#/.,......,
+                                                *(@@@%(%%,/@//@(%#(%%/%#.,,..,...,
+                                            /#%((#@%(%(##///*,*%&@%*,,,,....,.,.
+                                            ***&(##%%%((##((@&%&******.,...,.,.
+                                        *#%(%%%#%#&&%(*,/(//*****,,,,,,,.,,
+                                        ./((##(#%&&&@&%#&/(/******,,****,*,,,,
+                                    .((/(&@%%##%%%#(((/*/****,****,,,,,.,,,.
+                                .((((/%#%%%&@/,,*,*////**/**,,,,,*,,,,.,,
+                            ,/(%%%##(%@(@&*,.,,.   .***********,,,,,,,
+                    ,((%%#(##%# @                    .//,
+                .(/#%####(%*                               .***
+            #%#(###,                                      ,,*    */ ,
+            (*                       .,.            / *****,,*/.          ,.
+                                ... ....     ,  ..,.. ....,.///**/*/**,,**/.
+                                                                    .** ,
 
 ### What is this repository for? ###
 
-* Quick summary
-* Version
-* [Learn Markdown](https://bitbucket.org/tutorials/markdowndemo)
+Sparrow is an Electron application originally created for categorising small video clips.
 
-### How do I get set up? ###
+### Installation ###
 
-* Summary of set up
-* Configuration
-* Dependencies
-* Database configuration
-* How to run tests
-* Deployment instructions
+Download and install [Node.js](https://nodejs.org).
+Download and install [VS Code](https://code.visualstudio.com/)
 
-### Contribution guidelines ###
+Command Line:
+* npm install
+* npm start
 
-* Writing tests
-* Code review
-* Other guidelines
+Alternatively run the debugger through VS Code (F5).
 
-### Who do I talk to? ###
+### Deployment ###
 
-* Repo owner or admin
-* Other community or team contact
+Command Line:
+* npm package-win
