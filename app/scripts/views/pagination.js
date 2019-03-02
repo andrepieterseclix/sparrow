@@ -16,7 +16,7 @@ module.exports = function (pageResult, baseUrl, urlParams) {
     ul.appendChild(createArrow('chevron_left', baseUrl, urlParams, pageNumber === 1, pageNumber - 1));
 
     // Pages
-    for (let i = totalRecords; i >= 0; i -= pageSize, page++) {
+    for (let i = totalRecords; i > 0; i -= pageSize, page++) {
         const pageItem = document.createElement('li');
         const pageAnchor = document.createElement('a');
 
