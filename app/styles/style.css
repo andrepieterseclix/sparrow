@@ -71,3 +71,7 @@ body {
   main {
     flex: 1 0 auto;
   }
+
+.pagination li.active {
+    background-color: #f06292;
+}

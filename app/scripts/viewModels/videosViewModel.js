@@ -16,6 +16,14 @@ module.exports = {
                 page.pageSize = parseInt(urlParams.get('s'));
             }
 
+            self.getPageNumber = function () {
+                return page.pageNumber;
+            };
+
+            self.getPageSize = function () {
+                return page.pageSize;
+            };
+
             self.videos = ko.observableArray();
 
             self.importVideo = function () {

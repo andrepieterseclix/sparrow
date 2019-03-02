@@ -18,7 +18,7 @@
                     <div class="card">
                         <div class="card-image">
                             <a href="#"
-                                data-bind="attr: { href: 'video.html?c=' + $parent.categoryId() + '&v=' + _id }">
+                                data-bind="attr: { href: `video.html?c=${$parent.categoryId()}&v=${_id}&p=${$parent.pageNumber()}&s=${$parent.pageSize()}` }">
                                 <video preload="metadata" class="responsive-video" onmouseover="this.play()"
                                     onmouseout="this.pause()" muted>
                                     <source data-bind="attr: { src: url }" type="video/mp4">
@@ -67,6 +67,8 @@
             document.location = 'categories.html';
         }
         else {
+            viewModel.pageNumber(page.pageNumber);
+            viewModel.pageSize(page.pageSize);
             navbar('categories');
             breadcrumb([
                 { href: 'index.html', icon: 'home' },

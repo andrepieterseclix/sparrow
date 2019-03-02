@@ -5,6 +5,10 @@ module.exports = {
         constructor(importVideo) {
             const self = this;
 
+            self.pageNumber = ko.observable();
+
+            self.pageSize = ko.observable();
+
             self.categoryId = ko.observable();
 
             self.categoryName = ko.observable();

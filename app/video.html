@@ -130,7 +130,7 @@
             setBreadcrumb(video, category);
 
             let videoUrl = `http://localhost:3000/video/${video._id}`;
-            if(video.skipSeconds) {
+            if (video.skipSeconds) {
                 videoUrl += `#t=${video.skipSeconds}`;
             }
 
@@ -161,13 +161,19 @@
                 { href: 'index.html', icon: 'home' }
             ];
 
+            // Link to parent page
+            let paging = '';
+            if (urlParams.has('p') && urlParams.has('s')) {
+                paging = `p=${urlParams.get('p')}&s=${urlParams.get('s')}`;
+            }
+
             if (category) {
-                viewModel.parentUrl(`category.html?c=${category._id}`);
+                viewModel.parentUrl(`category.html?c=${category._id}&${paging}`);
                 breadcrumbItems.push({ href: 'categories.html', text: 'Categories' });
                 breadcrumbItems.push({ href: viewModel.parentUrl(), text: category.name });
             }
             else {
-                viewModel.parentUrl('videos.html');
+                viewModel.parentUrl(`videos.html?${paging}`);
                 breadcrumbItems.push({ href: viewModel.parentUrl(), text: 'Videos' });
             }
 
