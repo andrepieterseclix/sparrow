@@ -1,15 +1,131 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
-<body>
 
+<body>
+    <main>
+        <br />
+        <div class="container">
+
+            <div class="row">
+                <div class="col l9">
+                    <span>
+                        <a href="videos.html" class="breadcrumb dark">Featured</a>
+                    </span>
+                    <div class="row" data-bind="foreach: featuredVideos">
+                        <div class="col s12">
+                            <div class="card">
+                                <div class="card-image">
+                                    <a href="#" data-bind="attr: { href: `video.html?v=${_id}` }">
+                                        <video preload="metadata" class="responsive-video" onmouseover="this.play()"
+                                            onmouseout="this.pause()" muted>
+                                            <source data-bind="attr: { src: url }" type="video/mp4">
+                                        </video>
+                                    </a>
+                                </div>
+                                <div class="card-content">
+                                    <p data-bind="text: title"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <span>
+                        <a href="videos.html" class="breadcrumb dark">Videos</a>
+                    </span>
+                    <div class="row" data-bind="foreach: videos">
+                        <div class="col s12 m4">
+                            <div class="card">
+                                <div class="card-image">
+                                    <a href="#" data-bind="attr: { href: `video.html?v=${_id}` }">
+                                        <video preload="metadata" class="responsive-video" onmouseover="this.play()"
+                                            onmouseout="this.pause()" muted>
+                                            <source data-bind="attr: { src: url }" type="video/mp4">
+                                        </video>
+                                    </a>
+                                </div>
+                                <div class="card-content">
+                                    <p data-bind="text: title"></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col l3 hide-on-med-and-down">
+                    <span>
+                        <a href="categories.html" class="breadcrumb dark">Categories</a>
+                    </span>
+                    <div class="row" data-bind="foreach: categories">
+                        <div class="col s12">
+                            <div class="card">
+                                <div class="card-image pink lighten-2">
+                                    <a data-bind="attr: { href: `category.html?c=${_id}` }" class="white-text">
+                                        <img src="assets/images/baseline-playlist_play-24px.svg" />
+                                        <span class="card-title" data-bind="text: name"></span>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
     <script type="text/javascript">
-       // Nothing to show, for now redirect to videos
-        document.location = 'videos.html';
+        const { IndexViewModel } = require('./scripts/viewModels/indexViewModel');
+        const viewModel = new IndexViewModel();
+        const navbar = require('./scripts/views/navbar');
+        const { ipcRenderer } = require('electron');
+
+        navbar('home');
+
+        ko.applyBindings(viewModel);
+
+        ipcRenderer.on('data:getCategories', (event, data) => {
+            data.forEach((item) => {
+                viewModel.categories.push(item);
+            });
+        });
+
+        ipcRenderer.on('videos:getRandom', (event, data) => {
+            const { err, result } = data;
+
+            if (err) {
+                console.error(err);
+                alert('An error has occurred!');
+                return;
+            }
+
+            viewModel.setVideos(result.videos);
+            ipcRenderer.send('data:getCategories');            
+        });
+
+        window.addEventListener('beforeunload', () => {
+            const sources = document.getElementsByTagName('source');
+
+            for (let i = 0; i < sources.length; i++) {
+                const source = sources[i];
+                source.parentElement.pause();
+                source.closest('.col').setAttribute('hidden', null);
+                source.removeAttribute('src');
+                source.parentElement.load();
+            }
+        });
+
+        ipcRenderer.send('videos:getRandom', { recordsToCollect: 13 });
+
     </script>
 </body>
+
 </html>

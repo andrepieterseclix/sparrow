@@ -28,6 +28,15 @@ module.exports = function (activeItem) {
     desktopNav.setAttribute('class', 'right hide-on-med-and-down');
     wrapper.appendChild(desktopNav);
 
+    const desktopHome = document.createElement('li');
+    desktopHome.setAttribute('id', 'home');
+    desktopHome.setAttribute('class', 'waves-effect waves-light');
+    const desktopHomeLink = document.createElement('a');
+    desktopHomeLink.setAttribute('href', 'index.html');
+    desktopHomeLink.appendChild(document.createTextNode('Home'));
+    desktopHome.appendChild(desktopHomeLink);
+    desktopNav.appendChild(desktopHome);
+
     const desktopVideos = document.createElement('li');
     desktopVideos.setAttribute('id', 'videos');
     desktopVideos.setAttribute('class', 'waves-effect waves-light');
@@ -59,6 +68,14 @@ module.exports = function (activeItem) {
     const mobileNav = document.createElement('ul');
     mobileNav.setAttribute('class', 'sidenav');
     mobileNav.setAttribute('id', 'mobile-nav');
+
+    const mobileHome = document.createElement('li');
+    mobileHome.setAttribute('id', 'homeMobile');
+    const mobileHomeLink = document.createElement('a');
+    mobileHomeLink.setAttribute('href', 'index.html');
+    mobileHomeLink.appendChild(document.createTextNode('Home'));
+    mobileHome.appendChild(mobileHomeLink);
+    mobileNav.appendChild(mobileHome);
 
     const mobileVideos = document.createElement('li');
     mobileVideos.setAttribute('id', 'videosMobile');

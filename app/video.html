@@ -112,7 +112,6 @@
 
         function setVideo(data) {
             const { err, result } = data;
-            const { video, category } = result;
 
             if (err) {
                 console.error(err);
@@ -123,6 +122,8 @@
                 });
                 return;
             }
+
+            const { video, category } = result;
 
             viewModel.model(video);
             viewModel.editTitle(video.title);

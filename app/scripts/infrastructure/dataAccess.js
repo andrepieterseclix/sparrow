@@ -54,6 +54,31 @@ module.exports = {
                 });
             };
 
+            this.getVideo = function (ids, callback) {
+                videos.findOne({ _id: ids.videoId }, (err, video) => {
+                    if (err) {
+                        callback(err);
+                    }
+                    else if (!video) {
+                        callback(new Error('Video not found!'));
+                    }
+                    else if (ids.categoryId && video.categories.includes(ids.categoryId)) {
+                        categories.findOne({ _id: ids.categoryId }, (err, category) => {
+                            if (err) {
+                                console.error(err);
+                                callback(null, { video });
+                            }
+                            else {
+                                callback(null, { video, category });
+                            }
+                        });
+                    }
+                    else {
+                        callback(null, { video });
+                    }
+                });
+            };
+
             this.getVideos = function (spec) {
                 let promise = Promise.resolve(spec);
 
@@ -66,6 +91,12 @@ module.exports = {
 
                 return promise;
             }
+
+            this.getRandomVideos = function (spec) {
+                return countVideos(spec)
+                    .then(getRandomVideoPositions)
+                    .then(getVideosAtPositions);
+            };
 
             this.deleteCategory = function (category, callback) {
                 const promise = unlinkCategoryFromVideos(category)
@@ -94,31 +125,6 @@ module.exports = {
                 videos.insert(video, function (err, doc) {
                     if (callback)
                         callback(err, doc);
-                });
-            };
-
-            this.getVideo = function (ids, callback) {
-                videos.findOne({ _id: ids.videoId }, (err, video) => {
-                    if (err) {
-                        callback(err);
-                    }
-                    else if (!video) {
-                        callback(new Error('Video not found!'));
-                    }
-                    else if (ids.categoryId && video.categories.includes(ids.categoryId)) {
-                        categories.findOne({ _id: ids.categoryId }, (err, category) => {
-                            if (err) {
-                                console.error(err);
-                                callback(null, { video });
-                            }
-                            else {
-                                callback(null, { video, category });
-                            }
-                        });
-                    }
-                    else {
-                        callback(null, { video });
-                    }
                 });
             };
 
@@ -151,18 +157,72 @@ module.exports = {
                         }
                     });
                 })
-                    .then(result => {
-                        return new Promise((resolve, reject) => {
-                            videos.count({}, (err, count) => {
-                                if (err) {
-                                    reject(err);
-                                }
-                                else {
-                                    resolve({ ...result, totalRecords: count });
-                                }
-                            });
-                        });
+                    .then(countVideos);
+            }
+
+            function countVideos(result) {
+                return new Promise((resolve, reject) => {
+                    videos.count({}, (err, count) => {
+                        if (err) {
+                            reject(err);
+                        }
+                        else {
+                            resolve({ ...result, totalRecords: count });
+                        }
                     });
+                });
+            }
+
+            function getRandomVideoPositions(spec) {
+                const { totalRecords } = spec;
+                let { recordsToCollect } = spec;
+                const positions = [];
+                const all = [];
+                let random = -1;
+
+                for (let index = 0; index < totalRecords; index++) {
+                    all.push(index);
+                }
+
+                while (all.length > 0 && recordsToCollect > 0) {
+                    random = getRandom(0, all.length);
+                    positions.push(all.splice(random, 1));
+                    recordsToCollect--;
+                }
+
+                spec.positions = positions;
+
+                return Promise.resolve(spec);
+            }
+
+            function getVideosAtPositions(spec) {
+                spec.videos = [];
+                let promise = Promise.resolve(spec);
+
+                for (let i = 0; i < spec.positions.length; i++) {
+                    promise = promise.then(x => getVideoAtPosition(x, i));
+                }
+
+                return promise;
+            }
+
+            function getVideoAtPosition(spec, index) {
+                return new Promise((resolve, reject) => {
+                    videos
+                        .find({})
+                        .sort({ title: 1 })
+                        .skip(spec.positions[index])
+                        .limit(1)
+                        .exec((err, videos) => {
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                spec.videos.push(videos[0]);
+                                resolve(spec);
+                            }
+                        });
+                });
             }
 
             function getVideosForCategory(spec) {
@@ -294,6 +354,13 @@ module.exports = {
                         }
                     );
                 });
+            }
+
+            function getRandom(min, max) {
+                const random = Math.random();
+                const randomInt = Math.floor(random * (+max - +min)) + +min;
+
+                return randomInt;
             }
         }
     },

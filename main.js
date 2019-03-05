@@ -133,7 +133,7 @@ function showMainWindow(recordHandlers) {
     // Set up data access security
     dataAccess = new DataAccess(dataDirectory, recordHandlers.encryptRecord, recordHandlers.decryptRecord);
 
-    window.loadFile('app/videos.html');
+    window.loadFile('app/index.html');
     window.maximize();
 }
 
@@ -276,6 +276,12 @@ ipcMain.on('data:getVideo', (event, item) => {
     dataAccess.getVideo(item, (err, result) => {
         event.sender.send('data:getVideo', { err, result });
     });
+});
+
+ipcMain.on('videos:getRandom', (event, spec) => {
+    dataAccess.getRandomVideos(spec)
+        .then(result => event.sender.send('videos:getRandom', { err: null, result }))
+        .catch(err => event.sender.send('videos:getRandom', { err }));
 });
 
 ipcMain.on('console.log', (event, info) => {
