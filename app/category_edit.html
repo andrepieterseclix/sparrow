@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+    <meta charset="utf-8" />
+    <title>Sparrow - Categories</title>
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet" />
+    <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
+    <link rel="stylesheet" type="text/css" href="styles/style.css" />
+</head>
+
+<body>
+    <div class="container">
+        <form data-bind="submit: save">
+            <div class="row">
+                <div class="input-field col s12">
+                    <input data-bind="value: name" id="name" type="text" class="validate" required autofocus>
+                    <label for="name">Name</label>
+                </div>
+            </div>
+
+            <button class="btn pink lighten-2" type="submit">Save</button>
+            <button class="btn pink lighten-2" data-bind="click: cancel">Cancel</button>
+        </form>
+    </div>
+
+    <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
+    <script type="text/javascript" src="../node_modules/sweetalert/dist/sweetalert.min.js"></script>
+    <script type="text/javascript" src="scripts/lib/knockout-3.4.2.js"></script>
+    <script type="text/javascript">
+        const urlParams = new URLSearchParams(window.location.search);
+        const { ipcRenderer } = require('electron');
+        const navbar = require('./scripts/views/navbar');
+        const breadcrumb = require('./scripts/views/breadcrumb');
+        const { CategoryEditViewModel } = require('./scripts/viewModels/categoryEditViewModel');
+        const viewModel = new CategoryEditViewModel(save);
+        let categoryId = null;
+
+        ipcRenderer.on('data:updateCategory', (sender, data) => {
+            const { err, category } = data;
+            
+            if (err) {
+                console.error(err);
+                swal({
+                    title: 'Error',
+                    text: 'An error has occurred!',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            document.location = `category.html?c=${category._id}`;
+        });
+
+        ipcRenderer.on('data:getCategory', (sender, data) => {
+            const { err, category } = data;
+
+            if (err) {
+                console.error(err);
+                swal({
+                    title: 'Error',
+                    text: 'An error has occurred!',
+                    icon: 'warning'
+                });
+                return;
+            }
+
+            setCategory(category);
+        });
+
+        if (!urlParams.has('c')) {
+            document.location = 'categories.html';
+        }
+        else {
+            navbar('categories');
+            categoryId = urlParams.get('c');
+            ipcRenderer.send('data:getCategory', { id: categoryId });
+        }
+
+        function save(category) {
+            ipcRenderer.send('data:updateCategory', category);
+        }
+
+        function setCategory(category) {
+            viewModel.model(category);
+            viewModel.name(category.name);
+
+            ko.applyBindings(viewModel);
+
+            breadcrumb([
+                { href: 'index.html', icon: 'home' },
+                { href: 'categories.html', text: 'Categories' },
+                { href: `category.html?c=${category._id}`, text: category.name },
+                { href: '#', text: 'Edit' }
+            ]);
+
+        }
+    </script>
+</body>
+
+</html>

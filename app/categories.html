@@ -14,13 +14,14 @@
             <div class="col s12 m6 l4 xl3">
                 <div class="card">
                     <div class="card-image pink lighten-2">
-                        <a data-bind="attr: { href: 'category.html?c=' + _id }" class="white-text">
+                        <a data-bind="attr: { href: `category.html?c=${_id}` }" class="white-text">
                             <img src="assets/images/baseline-playlist_play-24px.svg"/>
                             <span class="card-title" data-bind="text: name"></span>
                         </a>
                     </div>
                     <div class="card-action" data-bind="visible: $root.editMode()">
                         <a data-bind="click: $parent.deleteCategory" class="waves-effect waves-light btn-small red darken-3"><i class="material-icons left">not_interested</i>Delete</a>
+                        <a data-bind="attr: { href: `category_edit.html?c=${_id}` }" class="waves-effect waves-light btn-small pink"><i class="material-icons left">settings</i>Edit</a>
                     </div>
                 </div>
             </div>

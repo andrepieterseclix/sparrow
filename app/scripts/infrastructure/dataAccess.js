@@ -48,9 +48,26 @@ module.exports = {
                 });
             };
 
+            this.updateCategory = function (category, callback) {
+                categories.update(
+                    { _id: category._id },
+                    category,
+                    { multi: false, returnUpdatedDocs: true  },
+                    (err, numAffected, affectedDocuments) => {
+                        callback({ err, category: affectedDocuments });
+                    }
+                );
+            };
+
             this.getCategories = function (callback) {
                 categories.find({}).sort({ name: 1 }).exec((err, docs) => {
                     callback(docs);
+                });
+            };
+
+            this.getCategory = function (id, callback) {
+                categories.findOne({ _id: id }, (err, category) => {
+                    callback({ err, category });
                 });
             };
 

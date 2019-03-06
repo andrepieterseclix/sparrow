@@ -248,6 +248,18 @@ ipcMain.on('data:getCategories', event => {
     });
 });
 
+ipcMain.on('data:getCategory', (event, data) => {
+    dataAccess.getCategory(data.id, result => {
+        event.sender.send('data:getCategory', result);
+    })
+});
+
+ipcMain.on('data:updateCategory', (event, category) => {
+    dataAccess.updateCategory(category, result => {
+        event.sender.send('data:updateCategory', result);
+    })
+});
+
 ipcMain.on('data:deleteCategory', (event, item) => {
     dataAccess.deleteCategory(item, (err, info) => {
         event.sender.send('data:deleteCategory', { err, unsortedCategory: info.unsortedCategory });

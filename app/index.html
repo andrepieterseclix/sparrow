@@ -103,12 +103,16 @@
 
             if (err) {
                 console.error(err);
-                alert('An error has occurred!');
+                swal({
+                    title: 'Error',
+                    text: 'An error has occurred!',
+                    icon: 'warning'
+                });
                 return;
             }
 
             viewModel.setVideos(result.videos);
-            ipcRenderer.send('data:getCategories');            
+            ipcRenderer.send('data:getCategories');
         });
 
         window.addEventListener('beforeunload', () => {
