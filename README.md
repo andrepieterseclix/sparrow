@@ -47,5 +47,4 @@ Alternatively run the debugger through VS Code (F5).
 
 ### Deployment ###
 
-Command Line:
 1. npm run package-win
