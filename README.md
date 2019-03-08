@@ -48,4 +48,4 @@ Alternatively run the debugger through VS Code (F5).
 ### Deployment ###
 
 Command Line:
-* npm package-win
+* npm run package-win
