@@ -40,12 +40,12 @@ Download and install [Node.js](https://nodejs.org).
 Download and install [VS Code](https://code.visualstudio.com/)
 
 Command Line:
-* npm install
-* npm start
+1. npm install
+2. npm start
 
 Alternatively run the debugger through VS Code (F5).
 
 ### Deployment ###
 
 Command Line:
-* npm run package-win
+1. npm run package-win
