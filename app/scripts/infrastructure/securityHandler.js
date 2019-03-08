@@ -219,16 +219,4 @@ module.exports = {
             }
         }
     }
-
-    // TODO
-    // Encrypt data files?
-    //https://stackoverflow.com/questions/42539412/protect-nedb-database-with-user-password
-    //https://nodejs.org/api/crypto.html#crypto_crypto_scrypt_password_salt_keylen_options_callback
-
-    // Login mechanism?
-    //https://steemit.com/utopian-io/@pckurdu/how-to-login-electron-application-with-child-windows
-    //https://electronjs.org/docs/api/session
-
-    // Extra reading seems worthwhile:
-    //https://dzone.com/articles/learning-electron-4-things-i-wish-i-knew-sooner
 };

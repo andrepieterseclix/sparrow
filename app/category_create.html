@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow - Create Category</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
+
 <body>
     <nav>
         <div class="nav-wrapper pink">
@@ -29,6 +31,8 @@
             <button class="btn pink lighten-2" type="submit">Save</button>
             <button class="btn pink lighten-2" id="cancelButton">Cancel</button>
         </form>
+
+        <canvas id="canvas" width="400" height="400"></canvas>
     </div>
 
     <script type="text/javascript" src="../node_modules/materialize-css/dist/js/materialize.min.js"></script>
@@ -47,7 +51,8 @@
         });
 
         ipcRenderer.on('categories:create:submit', (event, data) => {
-            const { err } = data;
+            const { err, importDir, imagePath, category } = data;
+
             if (err) {
                 console.log(err);
                 swal({
@@ -59,7 +64,26 @@
                 return;
             }
 
-            document.location = 'categories.html';
+            const { FileAccess } = require('./scripts/infrastructure/fileAccess');
+            const fileAccess = new FileAccess(importDir);
+            let importError = null;
+
+            fileAccess
+                .importFile(imagePath, category._id, false)
+                .catch(err => importError = err)
+                .then(() => {
+                    if (importError) {
+                        console.log(importError);
+                        swal({
+                            title: 'Error',
+                            text: 'An error has occurred!',
+                            icon: 'warning'
+                        });
+                    }
+                    else {
+                        document.location = 'categories.html';
+                    }
+                });
         });
 
         cancelButton.addEventListener('click', () => {
@@ -68,4 +92,5 @@
         });
     </script>
 </body>
+
 </html>

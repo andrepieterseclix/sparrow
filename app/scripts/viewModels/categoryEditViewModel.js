@@ -9,6 +9,8 @@ module.exports = {
 
             self.name = ko.observable();
 
+            //self.cropData = ko.observable();
+
             self.save = function () {
                 const model = self.model();
                 model.name = self.name();

@@ -13,8 +13,8 @@ const securityHandler = new SecurityHandler(dataDirectory);
 let loggedIn = false;
 
 // Web Server
-const { VideoStreamingServer } = require('./app/scripts/infrastructure/videoStreamingServer');
-const streamingServer = new VideoStreamingServer(importDir);
+const { BlobServer } = require('./app/scripts/infrastructure/blobServer');
+const streamingServer = new BlobServer(importDir);
 streamingServer.start();
 
 function getWorkingDirectory(subdir) {
@@ -208,15 +208,6 @@ ipcMain.on('data:createVideo', (event, item) => {
     });
 });
 
-ipcMain.on('data:deleteVideo', (event, item) => {
-    dataAccess.deleteVideo(item, (err, numDeleted) => {
-        if (err)
-            console.error(err);
-        else if (numDeleted !== 1)
-            console.log(`Expected to delete 1 video, actually deleted ${numDeleted}.`);
-    });
-});
-
 ipcMain.on('videos:import:submit', (event, item) => {
     if (item)
         window.webContents.send('videos:import:submit', item);
@@ -238,7 +229,8 @@ ipcMain.on('videos:import:selectFile', event => {
 
 ipcMain.on('categories:create:submit', (event, item) => {
     dataAccess.addCategory(item, (err, doc) => {
-        event.sender.send('categories:create:submit', { err, doc });
+        const imagePath = path.join(app.getAppPath(), 'app', 'images', 'category.png');
+        event.sender.send('categories:create:submit', { err, importDir, imagePath, category: doc });
     });
 });
 
@@ -250,7 +242,7 @@ ipcMain.on('data:getCategories', event => {
 
 ipcMain.on('data:getCategory', (event, data) => {
     dataAccess.getCategory(data.id, result => {
-        event.sender.send('data:getCategory', result);
+        event.sender.send('data:getCategory', { ...result, importDir });
     })
 });
 
@@ -260,9 +252,9 @@ ipcMain.on('data:updateCategory', (event, category) => {
     })
 });
 
-ipcMain.on('data:deleteCategory', (event, item) => {
-    dataAccess.deleteCategory(item, (err, info) => {
-        event.sender.send('data:deleteCategory', { err, unsortedCategory: info.unsortedCategory });
+ipcMain.on('data:deleteCategory', (event, category) => {
+    dataAccess.deleteCategory(category, (err, info) => {
+        event.sender.send('data:deleteCategory', { err, importDir, deletedCategory: category, unsortedCategory: info.unsortedCategory });
     });
 });
 
@@ -295,7 +287,3 @@ ipcMain.on('videos:getRandom', (event, spec) => {
         .then(result => event.sender.send('videos:getRandom', { err: null, result }))
         .catch(err => event.sender.send('videos:getRandom', { err }));
 });
-
-ipcMain.on('console.log', (event, info) => {
-    console.log(info);
-})

@@ -8,6 +8,13 @@ module.exports = {
             const mkdirp = require('mkdirp');
             const ensureDirectoryExists = require('./directoryAccess').ensureDirectoryExists;
 
+            this.saveToFile = function (blob, fileName) {
+                const dest = path.join(importDir, fileName);
+
+                return ensureDirectoryExists(importDir, fs, mkdirp)
+                    .then(() => saveFile(blob, dest));
+            };
+
             this.importFile = function (src, importFileName, deleteSource) {
                 const dest = path.join(importDir, importFileName);
 
@@ -69,6 +76,24 @@ module.exports = {
                             resolve({ src, dest, deleteSource });
                         }
                     });
+                });
+            }
+
+            function saveFile(blob, filePath) {
+                return new Promise((resolve, reject) => {
+                    const fileReader = new FileReader();
+                    fileReader.onloadend = function () {
+                        const base64 = fileReader.result.split(',')[1];
+                        fs.writeFile(filePath, base64, 'base64', err => {
+                            if (err) {
+                                reject(err);
+                            }
+                            else {
+                                resolve();
+                            }
+                        });
+                    };
+                    fileReader.readAsDataURL(blob);
                 });
             }
         }

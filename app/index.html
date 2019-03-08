@@ -67,7 +67,7 @@
                             <div class="card">
                                 <div class="card-image pink lighten-2">
                                     <a data-bind="attr: { href: `category.html?c=${_id}` }" class="white-text">
-                                        <img src="assets/images/baseline-playlist_play-24px.svg" />
+                                        <img data-bind="attr: { src: `http://localhost:3000/image/${_id}` }" />
                                         <span class="card-title" data-bind="text: name"></span>
                                     </a>
                                 </div>
@@ -100,7 +100,6 @@
 
         ipcRenderer.on('videos:getRandom', (event, data) => {
             const { err, result } = data;
-
             if (err) {
                 console.error(err);
                 swal({
@@ -111,7 +110,9 @@
                 return;
             }
 
-            viewModel.setVideos(result.videos);
+            if (result.videos.length > 0) {
+                viewModel.setVideos(result.videos);
+            }
             ipcRenderer.send('data:getCategories');
         });
 

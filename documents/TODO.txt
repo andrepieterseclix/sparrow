@@ -1,2 +1,6 @@
 Improve import screen
     Read .json
+
+Add image for categories
+    Encrypt in Blobs folder
+    how to access?

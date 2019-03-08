@@ -1,6 +1,7 @@
 ﻿<!DOCTYPE html>
 
 <html lang="en" xmlns="http://www.w3.org/1999/xhtml">
+
 <head>
     <meta charset="utf-8" />
     <title>Sparrow - Categories</title>
@@ -8,6 +9,7 @@
     <link rel="stylesheet" type='text/css' href="../node_modules/materialize-css/dist/css/materialize.min.css" />
     <link rel="stylesheet" type="text/css" href="styles/style.css" />
 </head>
+
 <body>
     <div class="container">
         <div class="row" data-bind="foreach: categories">
@@ -15,13 +17,17 @@
                 <div class="card">
                     <div class="card-image pink lighten-2">
                         <a data-bind="attr: { href: `category.html?c=${_id}` }" class="white-text">
-                            <img src="assets/images/baseline-playlist_play-24px.svg"/>
+                            <img data-bind="attr: { src: `http://localhost:3000/image/${_id}` }" />
                             <span class="card-title" data-bind="text: name"></span>
                         </a>
                     </div>
                     <div class="card-action" data-bind="visible: $root.editMode()">
-                        <a data-bind="click: $parent.deleteCategory" class="waves-effect waves-light btn-small red darken-3"><i class="material-icons left">not_interested</i>Delete</a>
-                        <a data-bind="attr: { href: `category_edit.html?c=${_id}` }" class="waves-effect waves-light btn-small pink"><i class="material-icons left">settings</i>Edit</a>
+                        <a data-bind="click: $parent.deleteCategory"
+                            class="waves-effect waves-light btn-small red darken-3"><i
+                                class="material-icons left">not_interested</i>Delete</a>
+                        <a data-bind="attr: { href: `category_edit.html?c=${_id}` }"
+                            class="waves-effect waves-light btn-small pink"><i
+                                class="material-icons left">settings</i>Edit</a>
                     </div>
                 </div>
             </div>
@@ -31,8 +37,10 @@
     <div class="fixed-action-btn">
         <a class="btn-floating btn-large pink"><i class="large material-icons">menu</i></a>
         <ul>
-            <li><a id="toggleSettingsButton" class="btn-floating waves-effect waves-light yellow darken-1"><i class="material-icons">settings</i></a></li>
-            <li><a href="category_create.html" class="btn-floating waves-effect waves-light red"><i class="material-icons">add</i></a></li>
+            <li><a id="toggleSettingsButton" class="btn-floating waves-effect waves-light yellow darken-1"><i
+                        class="material-icons">settings</i></a></li>
+            <li><a href="category_create.html" class="btn-floating waves-effect waves-light red"><i
+                        class="material-icons">add</i></a></li>
         </ul>
     </div>
 
@@ -45,6 +53,7 @@
         const breadcrumb = require('./scripts/views/breadcrumb');
         const { CategoriesViewModel } = require('./scripts/viewModels/categoriesViewModel');
         const viewModel = new CategoriesViewModel(deleteCallback);
+        const { FileAccess } = require('./scripts/infrastructure/fileAccess');
 
         navbar('categories');
         breadcrumb([
@@ -74,13 +83,20 @@
         });
 
         ipcRenderer.on('data:deleteCategory', (event, data) => {
-            const { err, unsortedCategory } = data;
+            const { err, importDir, deletedCategory, unsortedCategory } = data;
 
             if (err) {
-                console.log({ err });
+                console.error({ err });
                 swal("Could not delete Category!");
                 document.location = "categories.html";
             }
+
+            const fileAccess = new FileAccess(importDir);
+            fileAccess.deleteFile(deletedCategory._id, err => {
+                if (err) {
+                    console.error(err);
+                }
+            });
 
             if (unsortedCategory) {
                 viewModel.categories.push(unsortedCategory);
@@ -98,4 +114,5 @@
         }
     </script>
 </body>
+
 </html>
