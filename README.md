@@ -39,9 +39,7 @@ Sparrow is an Electron application originally created for categorising small vid
 1. Download and install [Node.js](https://nodejs.org).
 2. Download and install [VS Code](https://code.visualstudio.com/)
 3. npm install
-4. npm start
-
-Alternatively run the debugger through VS Code (F5).
+4. npm start, or run the debugger through VS Code (F5).
 
 ### Deployment ###
 
