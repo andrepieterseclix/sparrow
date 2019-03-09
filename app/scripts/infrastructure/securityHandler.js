@@ -8,6 +8,7 @@ module.exports = {
             const fs = require('fs');
             const path = require('path');
             const mkdirp = require('mkdirp');
+            const winattr = require('winattr');
             const { ensureDirectoryExists } = require('./directoryAccess');
             const securityFilePath = path.join(dataDirectory, 'security.db');
             const phrase = "[this is a secret]";
@@ -22,6 +23,7 @@ module.exports = {
             // Methods
             self.checkSecurity = function () {
                 return ensureDirectoryExists(dataDirectory, fs, mkdirp)
+                    .then(hideDataFolder)
                     .then(openFile)
                     .then(readSecurity)
                     .then(closeFile)
@@ -82,6 +84,22 @@ module.exports = {
                 return Promise.resolve({
                     isValid: result.plaintext === phrase,
                     key: result.key
+                });
+            }
+
+            function hideDataFolder(data) {
+                return new Promise(resolve => {
+                    try {
+                        const hiddenFolder = path.dirname(data.directory);
+                        winattr.set(hiddenFolder, { hidden: true, system: true }, err => {
+                            if (err) {
+                                console.error(err);
+                            }
+                        });
+                    } catch (error) {
+                        console.error(error);
+                    }
+                    resolve();
                 });
             }
 
